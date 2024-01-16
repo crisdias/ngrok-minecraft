@@ -12,8 +12,6 @@ services:
       GAMEMODE: survival
       DIFFICULTY: normal
       TZ: "America/Sao_Paulo"
-    ports:
-      - 25565:25565
     volumes:
       - ./data:/data
     stdin_open: true
@@ -22,8 +20,7 @@ services:
   ngrok:
     container_name: ngrok-tunnel
     image: crisdias/ngrok-minecraft
-    ports:
-      - 4040:4040
+    network_mode: service:mc
     environment:
       # check https://medium.com/@oliverbravery/publically-exposing-tcp-ports-with-static-url-without-port-forwarding-9ddd32ca2726 for instructions
       - NGROK_AUTHTOKEN=<YOUR_AUTHTOKEN>

@@ -50,32 +50,35 @@ This command will start the ngrok container and set it to restart unless explici
 For those who prefer using `docker-compose`, here is an example `docker-compose.yml` that includes both the Minecraft server and the ngrok service:
 
 ```yaml
-version: '3.8'
+version: '3.4'
+
 services:
   mc:
+    container_name: server
     image: itzg/minecraft-server
     environment:
       EULA: "TRUE"
-    ports:
-      - "25565:25565"
+      GAMEMODE: survival
+      DIFFICULTY: normal
+      TZ: "America/Sao_Paulo"
     volumes:
-      - mc_data:/data
+      - ./data:/data
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
   ngrok:
     container_name: ngrok-tunnel
     image: crisdias/ngrok-minecraft
-    ports:
-      - 4040:4040
+    network_mode: service:mc
     environment:
       - NGROK_AUTHTOKEN=<YOUR_AUTHTOKEN>
-      - MINECRAFT_PORT=25565
       - CLOUDFLARE_ZONE_ID=<YOUR_ZONE_ID>
       - CLOUDFLARE_DNS_RECORD_ID=<YOUR_DNS_RECORD_ID>
       - CLOUDFLARE_API_TOKEN=<YOUR_API_TOKEN>
+      - MINECRAFT_PORT=25565
     restart: unless-stopped
     depends_on:
       - mc
-volumes:
-  mc_data:
 ```
 
 Save this as `docker-compose.yml` and run with `docker compose up -d`.
